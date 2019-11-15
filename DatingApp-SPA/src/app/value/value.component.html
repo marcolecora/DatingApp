@@ -1,0 +1,5 @@
+<p *ngFor="let value of values; let myIndex = index; let evenClass=even;let oddClass=odd"
+[ngClass]="{ odd: evenClass, even: oddClass }"
+>
+  {{value.id}}, {{value.name}}, index= {{myIndex}}
+</p>
