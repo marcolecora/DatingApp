@@ -49,8 +49,6 @@ namespace DatingApp.API.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
         {
-            try {
-
                 throw new Exception("Computer says no!");
                 
                 // Check user exists
@@ -81,11 +79,8 @@ namespace DatingApp.API.Controllers
 
                 return Ok(new {
                     token = tokenHandler.WriteToken(token)
-                });
-
-            } catch (Exception exc) {
-                return StatusCode(500, "Computer really says no!");
-            }
+                }); return StatusCode(500, "Computer really says no!");
+     
         }
     }
 }
