@@ -10,6 +10,7 @@ export class AuthService {
 
 constructor(private http: HttpClient) { }
 
+/* Login service. */
 login(model: any) {
   return this.http.post(this.baseUrl + 'login', model)
   .pipe(
