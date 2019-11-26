@@ -8,23 +8,21 @@ import { map } from 'rxjs/operators';
 export class AuthService {
   baseUrl = 'http://localhost:5000/api/auth/';
 
-constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
-/* Login service. */
-login(model: any) {
-  return this.http.post(this.baseUrl + 'login', model)
-  .pipe(
-    map((response: any) => {
-      const user = response;
-      if (user) {
-        localStorage.setItem('token', user.token);
-      }
-    })
-  );
-}
+  /* Login service. */
+  login(model: any) {
+    return this.http.post(this.baseUrl + 'login', model).pipe(
+      map((response: any) => {
+        const user = response;
+        if (user) {
+          localStorage.setItem('token', user.token);
+        }
+      })
+    );
+  }
 
-register(model: any) {
-  return this.http.post(this.baseUrl + 'register', model);
-}
-
+  register(model: any) {
+    return this.http.post(this.baseUrl + 'register', model);
+  }
 }
