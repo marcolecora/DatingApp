@@ -15,12 +15,21 @@ export class ErrorInterceptor implements HttpInterceptor {
   ): import('rxjs').Observable<import('@angular/common/http').HttpEvent<any>> {
     return next.handle(req).pipe(
       catchError(error => {
-        /* Error 401. */
-        if (error.status === 401) {
-          return throwError(error.statusText);
+        /* Error 401. Unauthorised. */
+        switch (error.status) {
+          case 0:
+            console.log(error);
+            if (error.statusText === 'Unknown Error') {
+              return throwError('Unable to complete request');
+            }
+            return throwError(error.statusText);
+          case 401:
+            console.log(error);
+            return throwError(error.statusText);
+            break;
         }
 
-        /* Error 500. */
+        /* Errors != 401 (i.e., 400s Client Errors and 500s Server Errors). */
         if (error instanceof HttpErrorResponse) {
           /* Generic. */
           const applicationError = error.headers.get('Application-Error');
