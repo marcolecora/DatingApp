@@ -35,20 +35,24 @@ namespace DatingApp.API
         public void ConfigureServices(IServiceCollection services)
         {
             /* Data source. */
-            services.AddDbContext<DataContext>( x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
-            
+            services.AddDbContext<DataContext>(x => x.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
+
             /* Controllers. */
-            services.AddControllers().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddControllers()
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
+            .AddNewtonsoftJson();
 
             /* Cross Origin Resource Sharing. */
             services.AddCors();
 
             /* Repositories. */
             services.AddScoped<IAuthRepository, AuthRepository>();
+            services.AddScoped<IDatingRepository, DatingRepository>();
 
             /* Authentication. */
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options => {
+            .AddJwtBearer(options =>
+            {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -66,18 +70,24 @@ namespace DatingApp.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-            } else {
+            }
+            else
+            {
                 app.UseExceptionHandler(
-                    builder => {builder.Run(async context => {
-                        context.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
+                    builder =>
+                    {
+                        builder.Run(async context =>
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
 
-                        var error = context.Features.Get<IExceptionHandlerFeature>();
-                        if (error != null){
-                            context.Response.AddApplicationError(error.Error.Message);
-                            await context.Response.WriteAsync(error.Error.Message);
-                        }
+                            var error = context.Features.Get<IExceptionHandlerFeature>();
+                            if (error != null)
+                            {
+                                context.Response.AddApplicationError(error.Error.Message);
+                                await context.Response.WriteAsync(error.Error.Message);
+                            }
+                        });
                     });
-                });
             }
 
             // app.UseHttpsRedirection();
@@ -87,7 +97,7 @@ namespace DatingApp.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors( x=> x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
             app.UseEndpoints(endpoints =>
             {
