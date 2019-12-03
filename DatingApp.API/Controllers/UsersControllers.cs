@@ -8,11 +8,11 @@ namespace DatingApp.API.Controllers
     [Authorize]
     [Route("api/[controller]")]
     [ApiController]
-    public class UsersControllers : ControllerBase
+    public class UsersController : ControllerBase
     {
         private IDatingRepository _repo;
 
-        public UsersControllers(IDatingRepository repo)
+        public UsersController(IDatingRepository repo)
         {
             this._repo = repo;
         }
@@ -28,8 +28,8 @@ namespace DatingApp.API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUser(int id)
         {
-            var users = await this._repo.GetUser(id);
-            return Ok(users);
+            var user = await this._repo.GetUser(id);
+            return Ok(user);
         }
     }
 }

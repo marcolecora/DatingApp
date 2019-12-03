@@ -40,7 +40,9 @@ namespace DatingApp.API
             /* Controllers. */
             services.AddControllers()
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0)
-            .AddNewtonsoftJson();
+            .AddNewtonsoftJson(
+                opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
 
             /* Cross Origin Resource Sharing. */
             services.AddCors();
