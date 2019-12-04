@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DatingApp.API.Data;
 using DatingApp.API.Helpers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -46,6 +47,8 @@ namespace DatingApp.API
 
             /* Cross Origin Resource Sharing. */
             services.AddCors();
+
+            services.AddAutoMapper(typeof(DatingRepository).Assembly);
 
             /* Repositories. */
             services.AddScoped<IAuthRepository, AuthRepository>();

@@ -22,9 +22,8 @@ namespace DatingApp.API.Controllers
         {
             _context = context;
             _logger = logger;
-
         }
-        
+
         // GET api/values
         [AllowAnonymous]
         [HttpGet]
