@@ -47,7 +47,7 @@ namespace DatingApp.API
 
             /* Cross Origin Resource Sharing. */
             services.AddCors();
-
+            services.Configure<CloudinarySettings>(Configuration.GetSection("CloudinarySettings"));
             services.AddAutoMapper(typeof(DatingRepository).Assembly);
 
             /* Repositories. */
@@ -102,7 +102,7 @@ namespace DatingApp.API
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+            app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()); 
 
             app.UseEndpoints(endpoints =>
             {
