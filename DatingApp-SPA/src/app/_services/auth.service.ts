@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 import { JwtHelperService } from '@auth0/angular-jwt/';
 import { environment } from 'src/environments/environment';
-import { User } from '../_models/User';
+import { User } from '../_models/user';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
@@ -19,8 +19,7 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  changeMemberPhoto(photoUrl: string)
-  {
+  changeMemberPhoto(photoUrl: string) {
     this.photoUrl.next(photoUrl);
   }
 
