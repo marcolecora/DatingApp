@@ -42,13 +42,13 @@ namespace DatingApp.API.Data {
             users = users.Where (u => u.Gender == userParams.Gender);
 
             if (userParams.Likers) {
-                var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where ( u => userLikers.Contains(u.Id));
+                var userLikers = await GetUserLikes (userParams.UserId, userParams.Likers);
+                users = users.Where (u => userLikers.Contains (u.Id));
             }
 
             if (userParams.Likees) {
-                var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where ( u => userLikees.Contains(u.Id));
+                var userLikees = await GetUserLikes (userParams.UserId, userParams.Likers);
+                users = users.Where (u => userLikees.Contains (u.Id));
             }
 
             if (userParams.MinAge != 18 || userParams.MaxAge != 99) {
@@ -76,10 +76,10 @@ namespace DatingApp.API.Data {
         private async Task<IEnumerable<int>> GetUserLikes (int id, bool likers) {
             var user = await _context.Users.Include (x => x.Likers).Include (x => x.Likees).FirstOrDefaultAsync (u => u.Id == id);
 
-            if (likers){
-                return user.Likers.Where( u => u.LikeeId == id).Select( i => i.LikerId);
+            if (likers) {
+                return user.Likers.Where (u => u.LikeeId == id).Select (i => i.LikerId);
             } else {
-                return user.Likees.Where( u => u.LikerId == id).Select( i => i.LikeeId);
+                return user.Likees.Where (u => u.LikerId == id).Select (i => i.LikeeId);
             }
         }
 
@@ -95,6 +95,36 @@ namespace DatingApp.API.Data {
             return await _context.Likes.FirstOrDefaultAsync (
                 l => l.LikerId == userId && l.LikeeId == recipientId
             );
+        }
+
+        public async Task<Message> GetMessage (int id) {
+            return await _context.Messages.FirstOrDefaultAsync (m => m.Id == id);
+        }
+
+        public Task<PagedList<Message>> GetMessagesForUser (MessageParams messageParams) {
+            var messages = _context.Messages
+                .Include (m => m.Sender).ThenInclude (s => s.Photos)
+                .Include (m => m.Recipient).ThenInclude (r => r.Photos)
+                .AsQueryable ();
+
+            switch (messageParams.MessageContainer) {
+                case "Inbox":
+                    messages = messages.Where (m => m.RecipientId == messageParams.UserId);
+                    break;
+                case "Outbox":
+                    messages = messages.Where (m => m.SenderId == messageParams.UserId);
+                    break;
+                default:
+                    messages = messages.Where (m => m.SenderId == messageParams.UserId && m.IsRead == false);
+                    break;
+            }
+
+            messages = messages.OrderByDescending (m => m.MessageSent);
+            return PagedList<Message>.CreateAsync (messages, messageParams.PageNumber, messageParams.PageSize);
+        }
+
+        public Task<IEnumerable<Message>> MessageThread (int userId, int recipientId) {
+            throw new NotImplementedException ();
         }
     }
 }
