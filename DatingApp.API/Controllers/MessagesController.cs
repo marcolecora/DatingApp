@@ -72,13 +72,26 @@ namespace DatingApp.API.Controllers {
 
             messageParams.UserId = userId;
 
-            var messagesFromRepo = await _repo.GetMessagesForUser(messageParams);
+            var messagesFromRepo = await _repo.GetMessagesForUser (messageParams);
 
-            var messages = _mapper.Map<IEnumerable<MessageToReturnDto>>(messagesFromRepo);
+            var messages = _mapper.Map<IEnumerable<MessageToReturnDto>> (messagesFromRepo);
 
-            Response.AddPagination(messageParams.PageNumber, messagesFromRepo.PageSize, messagesFromRepo.TotalCount, messagesFromRepo.TotalCount);
+            Response.AddPagination (messageParams.PageNumber, messagesFromRepo.PageSize, messagesFromRepo.TotalCount, messagesFromRepo.TotalCount);
 
-            return Ok(messages);
+            return Ok (messages);
+        }
+
+        [HttpGet ("thread/{recipientId}")]
+        public async Task<IActionResult> GetMessageThread (int userId, int recipientId) {
+            if (userId != int.Parse (User.FindFirst (ClaimTypes.NameIdentifier).Value)) {
+                return Unauthorized ();
+            }
+
+            var messagesFromRepo = await _repo.GetMessageThread (userId, recipientId);
+
+            var messages = _mapper.Map<IEnumerable<MessageToReturnDto>> (messagesFromRepo);
+
+            return Ok (messages);
         }
 
     }

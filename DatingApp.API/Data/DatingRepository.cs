@@ -115,7 +115,7 @@ namespace DatingApp.API.Data {
                     messages = messages.Where (m => m.SenderId == messageParams.UserId);
                     break;
                 default:
-                    messages = messages.Where (m => m.SenderId == messageParams.UserId && m.IsRead == false);
+                    messages = messages.Where (m => m.RecipientId == messageParams.UserId && m.IsRead == false);
                     break;
             }
 
@@ -123,8 +123,18 @@ namespace DatingApp.API.Data {
             return PagedList<Message>.CreateAsync (messages, messageParams.PageNumber, messageParams.PageSize);
         }
 
-        public Task<IEnumerable<Message>> MessageThread (int userId, int recipientId) {
-            throw new NotImplementedException ();
+        public async Task<IEnumerable<Message>> GetMessageThread (int userId, int recipientId) {
+
+            var messages = await _context.Messages
+                .Include (m => m.Sender).ThenInclude (s => s.Photos)
+                .Include (m => m.Recipient).ThenInclude (r => r.Photos)
+                .Where (m => m.RecipientId == userId && m.SenderId == recipientId ||
+                    m.RecipientId == recipientId && m.SenderId == userId)
+                .OrderByDescending (m => m.MessageSent)
+                .ToListAsync ();
+
+            return messages;
+
         }
     }
 }
